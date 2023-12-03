@@ -33,12 +33,28 @@ func main() {
 }
 
 func replaceNumberWordWithDigit(line string) string {
-	for idx, word := range getNumberToDigit() {
-		// fmt.Println(word, idx)
-		line = strings.ReplaceAll(line, word, strconv.Itoa(idx+1))
-	}
 	// fmt.Println(line)
-	// time.Sleep(time.Second)
+	hasNumber := true
+	for hasNumber {
+		firstIndexOfNumber := -1
+		var keyOfFirstNumber int
+		numberToDigit := getNumberToDigit()
+		for key, word := range numberToDigit {
+			index := strings.Index(line, word)
+			if index == -1 {
+				continue
+			}
+			if firstIndexOfNumber == -1 || index < firstIndexOfNumber {
+				firstIndexOfNumber = index
+				keyOfFirstNumber = key
+			}
+		}
+		if firstIndexOfNumber != -1 {
+			line = strings.ReplaceAll(line, numberToDigit[keyOfFirstNumber], strconv.Itoa(keyOfFirstNumber+1))
+		} else {
+			hasNumber = false
+		}
+	}
 
 	return line
 }
@@ -57,7 +73,7 @@ func calculateCalibrationValue(line string) int {
 	}
 
 	sum := first*10 + last
-	fmt.Println(line)
+	// fmt.Println(line)
 	// fmt.Println(strconv.Itoa(first))
 	// fmt.Println(strconv.Itoa(last))
 	// fmt.Println(strconv.Itoa(sum))
