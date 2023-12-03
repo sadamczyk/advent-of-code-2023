@@ -9,6 +9,20 @@ import (
 	"unicode"
 )
 
+func getNumberToDigit() [9]string {
+	return [9]string{
+		"one",
+		"two",
+		"three",
+		"four",
+		"five",
+		"six",
+		"seven",
+		"eight",
+		"nine",
+	}
+}
+
 func main() {
 	scanner := bufio.NewScanner(os.Stdin)
 	var sum int
@@ -19,22 +33,12 @@ func main() {
 }
 
 func replaceNumberWordWithDigit(line string) string {
-	numberWordToDigit := map[string]string{
-		"one":   "1",
-		"two":   "2",
-		"three": "3",
-		"four":  "4",
-		"five":  "5",
-		"six":   "6",
-		"seven": "7",
-		"eight": "8",
-		"nine":  "9",
+	for idx, word := range getNumberToDigit() {
+		// fmt.Println(word, idx)
+		line = strings.ReplaceAll(line, word, strconv.Itoa(idx+1))
 	}
-
-	for word, digit := range numberWordToDigit {
-		line = strings.ReplaceAll(line, word, digit)
-	}
-	fmt.Println(line)
+	// fmt.Println(line)
+	// time.Sleep(time.Second)
 
 	return line
 }
@@ -53,7 +57,7 @@ func calculateCalibrationValue(line string) int {
 	}
 
 	sum := first*10 + last
-	// fmt.Println("Line: " + line)
+	fmt.Println(line)
 	// fmt.Println(strconv.Itoa(first))
 	// fmt.Println(strconv.Itoa(last))
 	// fmt.Println(strconv.Itoa(sum))
