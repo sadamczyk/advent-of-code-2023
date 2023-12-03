@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
 	"unicode"
 )
 
@@ -12,9 +13,30 @@ func main() {
 	scanner := bufio.NewScanner(os.Stdin)
 	var sum int
 	for scanner.Scan() {
-		sum += calculateCalibrationValue(scanner.Text())
+		sum += calculateCalibrationValue(replaceNumberWordWithDigit(scanner.Text()))
 	}
 	fmt.Println(strconv.Itoa(sum))
+}
+
+func replaceNumberWordWithDigit(line string) string {
+	numberWordToDigit := map[string]string{
+		"one":   "1",
+		"two":   "2",
+		"three": "3",
+		"four":  "4",
+		"five":  "5",
+		"six":   "6",
+		"seven": "7",
+		"eight": "8",
+		"nine":  "9",
+	}
+
+	for word, digit := range numberWordToDigit {
+		line = strings.ReplaceAll(line, word, digit)
+	}
+	fmt.Println(line)
+
+	return line
 }
 
 func calculateCalibrationValue(line string) int {
