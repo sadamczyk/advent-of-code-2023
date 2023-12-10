@@ -42,6 +42,27 @@ func processLine(previousLine string, currentLine string, nextLine string, sumOf
 	}
 
 	// Sum up gear ratios
+	gearSlices := findSlices(`\*+`, currentLine)
+gears:
+	for _, gearSlice := range gearSlices {
+		numbersAdjacentToGear := make([]int, 0, 2)
+		for _, line := range []string{previousLine, currentLine, nextLine} {
+			numberSlices := findSlices(`\d+`, line)
+			for _, numberSlice := range numberSlices {
+				if isNumberAdjacentToSymbol(numberSlice, [][]int{gearSlice}) {
+					if len(numbersAdjacentToGear) > 1 {
+						continue gears // There can only be exactly two numbers!
+					}
+					number, _ := strconv.Atoi(line[numberSlice[0]:numberSlice[1]])
+					numbersAdjacentToGear = append(numbersAdjacentToGear, number)
+				}
+			}
+		}
+
+		if len(numbersAdjacentToGear) == 2 {
+			sumOfGearRatios += numbersAdjacentToGear[0] * numbersAdjacentToGear[1]
+		}
+	}
 
 	return currentLine, nextLine, sumOfPartNumbers, sumOfGearRatios
 }
