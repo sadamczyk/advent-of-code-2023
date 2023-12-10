@@ -10,7 +10,7 @@ import (
 
 func main() {
 	scanner := bufio.NewScanner(os.Stdin)
-	sum := 0
+	var sumOfPartNumbers, sumOfGearRatios int
 	scanner.Scan()
 
 	// Prefill for the first line
@@ -18,42 +18,41 @@ func main() {
 	var currentLine string
 
 	for scanner.Scan() {
-		currentLine, nextLine, sum = processLine(currentLine, nextLine, scanner.Text(), sum)
+		currentLine, nextLine, sumOfPartNumbers, sumOfGearRatios = processLine(currentLine, nextLine, scanner.Text(), sumOfPartNumbers, sumOfGearRatios)
 	}
 
 	// Handle the last line
-	_, _, sum = processLine(currentLine, nextLine, "", sum)
+	_, _, sumOfPartNumbers, sumOfGearRatios = processLine(currentLine, nextLine, "", sumOfPartNumbers, sumOfGearRatios)
 
 	fmt.Println("Sum of part numbers:")
-	fmt.Println(sum)
+	fmt.Println(sumOfPartNumbers)
+	fmt.Println("Sum of gear ratios:")
+	fmt.Println(sumOfGearRatios)
 }
 
-func processLine(previousLine string, currentLine string, nextLine string, sum int) (string, string, int) {
-	symbolSlices := findSymbolSlices(previousLine, currentLine, nextLine)
+func processLine(previousLine string, currentLine string, nextLine string, sumOfPartNumbers int, sumOfGearRatios int) (string, string, int, int) {
+	// Sum up part numbers
+	symbolSlices := findSlices(`[^\d\.]+`, previousLine, currentLine, nextLine)
 
-	for _, numberSlice := range findNumberSlices(currentLine) {
+	for _, numberSlice := range findSlices(`\d+`, currentLine) {
 		if isNumberAdjacentToSymbol(numberSlice, symbolSlices) {
 			number, _ := strconv.Atoi(currentLine[numberSlice[0]:numberSlice[1]])
-			sum += number
+			sumOfPartNumbers += number
 		}
 	}
-	return currentLine, nextLine, sum
+
+	// Sum up gear ratios
+
+	return currentLine, nextLine, sumOfPartNumbers, sumOfGearRatios
 }
 
-func findNumberSlices(currentLine string) [][]int {
-	reNumber := regexp.MustCompile(`\d+`)
-	numberSlices := reNumber.FindAllStringSubmatchIndex(currentLine, -1)
+func findSlices(regex string, lines ...string) (slices [][]int) {
+	re := regexp.MustCompile(regex)
+	for _, line := range lines {
+		slices = append(slices, re.FindAllStringSubmatchIndex(line, -1)...)
+	}
 
-	return numberSlices
-}
-
-func findSymbolSlices(previousLine string, currentLine string, nextLine string) [][]int {
-	reSymbol := regexp.MustCompile(`[^\d\.]+`)
-	symbolSlices := reSymbol.FindAllStringSubmatchIndex(previousLine, -1)
-	symbolSlices = append(symbolSlices, reSymbol.FindAllStringSubmatchIndex(currentLine, -1)...)
-	symbolSlices = append(symbolSlices, reSymbol.FindAllStringSubmatchIndex(nextLine, -1)...)
-
-	return symbolSlices
+	return slices
 }
 
 func isNumberAdjacentToSymbol(numberSlice []int, symbolSlices [][]int) bool {
